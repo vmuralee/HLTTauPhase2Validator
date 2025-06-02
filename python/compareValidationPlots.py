@@ -5,6 +5,8 @@ import matplotlib.pyplot as plt
 from scipy.stats import beta
 import os
 
+import webbrowser
+
 # Binomial efficiency with asymmetric errors
 def binomial_confidence(n_pass, n_total, conf_level=0.6827):
     alpha = 1 - conf_level
@@ -27,20 +29,21 @@ def binomial_confidence(n_pass, n_total, conf_level=0.6827):
 # File paths — set these to your actual files
 file1_path = sys.argv[1]
 file2_path = sys.argv[2]
-file1_label = "Dataset A"
-file2_label = "Dataset B"
+file1_label = "15_1_0_pre2" 
+file2_label = "15_1_0_pre1"
 
 channels = ["ditau", "mutau", "eletau"]
-output_base = "compare_plots"
+output_base = "/eos/home-v/vmuralee/Phase2Validation/15_1_0_pre2/compare_plots/"
 os.makedirs(output_base, exist_ok=True)
 
-histogram_sets = [
-    ("hTrig1PassPt", "hTrig1TotalPt", "Trig1", "pt"),
-    ("hTrig2PassPt", "hTrig2TotalPt", "Trig2", "pt"),
-    ("hTrig1PassEta", "hTrig1TotalEta", "Trig1", "eta"),
-    ("hTrig2PassEta", "hTrig2TotalEta", "Trig2", "eta"),
-]
 
+# Define histogram sets
+histogram_sets = [
+    ("hTrig1PassPt", "hTrig1TotalPt", {"ditau":"hltHpsPFTauTrack","mutau":"hltL3crIsoL1TkSingleMu22","eletau":"hltEle30WPTightGsfTrackIsoL1SeededFilter"}, "pt"),
+    ("hTrig2PassPt", "hTrig2TotalPt", {"ditau":"hltHpsDoublePFTau35MediumDitauWPDeepTau","mutau":"hltHpsPFTau27LooseTauWPDeepTau","eletau":"hltHpsPFTau30LooseTauWPDeepTau"}, "pt"),
+    ("hTrig1PassEta", "hTrig1TotalEta", {"ditau":"hltHpsPFTauTrack","mutau":"hltL3crIsoL1TkSingleMu22","eletau":"hltEle30WPTightGsfTrackIsoL1SeededFilter"}, "eta"),
+    ("hTrig2PassEta", "hTrig2TotalEta", {"ditau":"hltHpsDoublePFTau35MediumDitauWPDeepTau","mutau":"hltHpsPFTau27LooseTauWPDeepTau","eletau":"hltHpsPFTau30LooseTauWPDeepTau"}, "eta"),
+]
 # Initialize HTML
 html_lines = [
     "<html><head><title>Trigger Efficiency Comparison</title></head><body>",
@@ -75,36 +78,62 @@ for channel in channels:
         eff2, err2_low, err2_up = binomial_confidence(values2_pass, values2_total)
 
         # Plot comparison
-        plt.figure(figsize=(8, 5))
+        plt.figure(figsize=(5, 5))
 
         plt.errorbar(
             bin_centers, eff1, yerr=[err1_low, err1_up],
-            fmt='o', linestyle='-', color='blue', label=file1_label
+            fmt='s', color='black', label=file1_label
         )
         plt.errorbar(
             bin_centers, eff2, yerr=[err2_low, err2_up],
-            fmt='s', linestyle='--', color='red', label=file2_label
+            fmt='s', color='red', label=file2_label
         )
 
-        axis_label = r"$p_T^\tau$ (GeV)" if axis_type == "pt" else r"$\eta^\tau$"
+        
+        if(pass_name == "hTrig1PassPt" and channel=="ditau" and axis_type == "pt"):
+            axis_label = r"$p_T^\tau$ (GeV)"
+        elif(pass_name == "hTrig2PassPt" and channel=="ditau" and axis_type == "pt"):
+            axis_label = r"$p_T^\tau$ (GeV)"
+        elif(pass_name == "hTrig1PassEta" and channel=="ditau" and axis_type == "eta"):
+            axis_label = r"$\eta^\tau$"
+        elif(pass_name == "hTrig2PassEta" and channel=="ditau" and axis_type == "eta"):
+            axis_label = r"$\eta^\tau$"
+        elif(pass_name == "hTrig1PassPt" and channel=="mutau" and axis_type == "pt"):
+            axis_label = r"$p_T^\mu$ (GeV)"
+        elif(pass_name == "hTrig2PassPt" and channel=="mutau" and axis_type == "pt"):
+            axis_label = r"$p_T^\tau$ (GeV)"
+        elif(pass_name == "hTrig1PassEta" and channel=="mutau" and axis_type == "eta"):
+            axis_label = r"$\eta^\mu$"
+        elif(pass_name == "hTrig2PassEta" and channel=="mutau" and axis_type == "eta"):
+            axis_label = r"$\eta^\tau$"
+        elif(pass_name == "hTrig1PassPt" and channel=="eletau" and axis_type == "pt"):
+            axis_label = r"$p_T^e$ (GeV)"
+        elif(pass_name == "hTrig2PassPt" and channel=="eletau" and axis_type == "pt"):
+            axis_label = r"$p_T^\tau$ (GeV)"
+        elif(pass_name == "hTrig1PassEta" and channel=="eletau" and axis_type == "eta"):
+            axis_label = r"$\eta^e$"
+        elif(pass_name == "hTrig2PassEta" and channel=="eletau" and axis_type == "eta"):
+            axis_label = r"$\eta^\tau$"
+            
         plt.xlabel(axis_label)
         plt.ylabel("Efficiency")
-        plt.title(f"{trig_label} Efficiency Comparison – {channel} ({axis_type})")
+        plt.title(f"{trig_label[channel]} Efficiency Comparison – {channel} ({axis_type})")
         plt.ylim(0, 1.1)
         plt.grid(True)
         plt.legend()
         plt.tight_layout()
 
         # Save plot
-        plot_filename = f"{trig_label}_eff_{axis_type}.png"
+        plot_filename = f"{trig_label[channel]}_eff_{axis_type}.jpg"
         plot_path = os.path.join(channel_dir, plot_filename)
         plt.savefig(plot_path)
         plt.close()
 
         # Add to HTML
         relative_path = os.path.join(channel, plot_filename)
-        html_lines.append(f"<h2>{trig_label} – {channel} ({axis_type})</h2>")
-        html_lines.append(f'<img src="{relative_path}" alt="{trig_label} {channel} {axis_type}"><br>')
+        html_lines.append(f"<h2>{trig_label[channel]} – {channel} ({axis_type})</h2>")
+        html_lines.append(f'<img src="{relative_path}" alt="{trig_label[channel]} {channel} {axis_type}"><br>')
+        
 
 # Finalize HTML
 html_lines.append("</body></html>")
@@ -112,4 +141,6 @@ html_path = os.path.join(output_base, "efficiencies.html")
 with open(html_path, "w") as f:
     f.write("\n".join(html_lines))
 
+
 print(f"Comparison plots saved. Open '{html_path}' to view.")
+webbrowser.open(f"file://{html_path}")
