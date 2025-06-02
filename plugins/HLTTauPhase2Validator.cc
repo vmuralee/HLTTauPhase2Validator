@@ -42,7 +42,8 @@
 #include "TMath.h"
 
 
-//ROOT inclusion                                                                                                                                                                                            
+//ROOT inclusion
+
 #include "TROOT.h"
 #include "TFile.h"
 #include "TNtuple.h"
@@ -61,6 +62,9 @@ public:
 
 private:
   void analyze(const edm::Event&, const edm::EventSetup&) override;
+  double deltaPhi(double phi1, double phi2);
+  double deltaR(double eta1, double phi1, double eta2, double phi2);
+
   
   // ----------member data ---------------------------
 
@@ -194,7 +198,21 @@ HLTTauPhase2Validator::~HLTTauPhase2Validator() {
 //
 // member functions
 //
+double HLTTauPhase2Validator::deltaPhi(double phi1, double phi2) {
+    double dphi = std::fmod(phi1 - phi2, 2 * M_PI);
+    if (dphi > M_PI)
+        dphi -= 2 * M_PI;
+    if (dphi < -M_PI)
+        dphi += 2 * M_PI;
+    return dphi;
+}
 
+// Compute deltaR between two objects in eta-phi space
+double HLTTauPhase2Validator::deltaR(double eta1, double phi1, double eta2, double phi2) {
+    double dEta = eta1 - eta2;
+    double dPhi = deltaPhi(phi1, phi2);
+    return std::sqrt(dEta * dEta + dPhi * dPhi);
+}
 // ------------ method called for each event  ------------
 void HLTTauPhase2Validator::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup) {
   using namespace edm;
@@ -259,17 +277,25 @@ void HLTTauPhase2Validator::analyze(const edm::Event& iEvent, const edm::EventSe
   }
 
   for (auto &mu : muons){
-    GenMuonPt = mu->pt();
-    GenMuonEta = mu->eta();
-    GenMuonPhi = mu->phi();
-    GenMuonM = mu->energy();
+    for (auto &tau :taus){
+      if(deltaR(mu->eta(),mu->phi(),tau->eta(),tau->phi()) < 0.4)
+	continue;
+      GenMuonPt = mu->pt();
+      GenMuonEta = mu->eta();
+      GenMuonPhi = mu->phi();
+      GenMuonM = mu->energy();
+    }
   }
 
   for (auto &ele : electrons){
-    GenElePt = ele->pt();
-    GenEleEta = ele->eta();
-    GenElePhi = ele->phi();
-    GenEleM = ele->energy();
+    for (auto &tau :taus){
+      if(deltaR(ele->eta(),ele->phi(),tau->eta(),tau->phi()) < 0.4)
+	continue;
+      GenElePt = ele->pt();
+      GenEleEta = ele->eta();
+      GenElePhi = ele->phi();
+      GenEleM = ele->energy();
+    }
   }
 
 
@@ -277,24 +303,26 @@ void HLTTauPhase2Validator::analyze(const edm::Event& iEvent, const edm::EventSe
   TLorentzVector genMuon; genMuon.SetPtEtaPhiE(GenMuonPt,GenMuonEta,GenMuonPhi,GenMuonM);
   TLorentzVector genEle; genEle.SetPtEtaPhiE(GenElePt,GenEleEta,GenElePhi,GenEleM);
 
-  if (channel_ == "ditau"){
+  
+  if(channel_ == "ditau"){
     hTrig1TotalPt->Fill(genTau.Pt());
     hTrig1TotalEta->Fill(genTau.Eta());
     hTrig2TotalPt->Fill(genTau.Pt());
     hTrig2TotalEta->Fill(genTau.Eta());
-  }
+  }  
   else if(channel_ == "mutau"){
     hTrig1TotalPt->Fill(genMuon.Pt());
     hTrig1TotalEta->Fill(genMuon.Eta());
     hTrig2TotalPt->Fill(genTau.Pt());
     hTrig2TotalEta->Fill(genTau.Eta());
   }
-  else {
+  else{
     hTrig1TotalPt->Fill(genEle.Pt());
     hTrig1TotalEta->Fill(genEle.Eta());
     hTrig2TotalPt->Fill(genTau.Pt());
     hTrig2TotalEta->Fill(genTau.Eta());
   }
+
   for (const auto& obj : *triggerObjects) {
     pat::TriggerObjectStandAlone unpackedObj = obj;
     unpackedObj.unpackPathNames(iEvent.triggerNames(*triggerBits));
