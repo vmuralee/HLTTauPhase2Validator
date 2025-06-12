@@ -65,4 +65,4 @@ process.hltEle30WPTightL1SeededLooseDeepTauPFTauHPS30CrossL1 = cms.EDAnalyzer('H
 
 process.TFileService = cms.Service("TFileService", fileName=cms.string('TenTau15_1_0_pre1_PU_141X_mcRun4_realistic_v3_STD_Run4D110.root'))
 
-process.p = cms.Path(process.ditau + process.mutau + process.eletau)
+process.p = cms.Path(process.hltDoubleMediumChargedIsoPFTauHPS40 + process.hltDoubleMediumDeepTauPFTauHPS35 + process.hltIsoMu20eta2p1LooseDeepTauPFTauHPS27CrossL1 + process.hltEle30WPTightL1SeededLooseDeepTauPFTauHPS30CrossL1)
