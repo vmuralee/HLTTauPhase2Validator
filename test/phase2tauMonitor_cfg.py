@@ -26,12 +26,19 @@ process.source = cms.Source("PoolSource",
             ))
 
 from Configuration.AlCa.GlobalTag import GlobalTag
-process.GlobalTag = GlobalTag(process.GlobalTag,'141X_mcRun4_realistic_v3' , '')#'140X_dataRun3_Prompt_v3'
+process.GlobalTag = GlobalTag(process.GlobalTag,'141X_dataRun3_v6' , '')#'140X_dataRun3_Prompt_v3'
 
 
 
-
-process.ditau = cms.EDAnalyzer('HLTTauPhase2Validator',
+process.hltDoubleMediumChargedIsoPFTauHPS40 = cms.EDAnalyzer('HLTTauPhase2Validator',
+                                       channel = cms.string("ditau"),
+                                       genParticles = cms.InputTag('prunedGenParticles'),
+                                       triggerObjects = cms.InputTag('slimmedPatTrigger'),
+                                       triggerBits = cms.InputTag('TriggerResults', '', 'HLT'),
+                                       triggerfilter1 = cms.string('hltHpsPFTauTrack'),
+                                       triggerfilter2 = cms.string('hltHpsDoublePFTau40TrackPt1MediumChargedIsolation')
+                               )
+process.hltDoubleMediumDeepTauPFTauHPS35 = cms.EDAnalyzer('HLTTauPhase2Validator',
                                        channel = cms.string("ditau"),
                                        genParticles = cms.InputTag('prunedGenParticles'),
                                        triggerObjects = cms.InputTag('slimmedPatTrigger'),
@@ -39,7 +46,7 @@ process.ditau = cms.EDAnalyzer('HLTTauPhase2Validator',
                                        triggerfilter1 = cms.string('hltHpsPFTauTrack'),
                                        triggerfilter2 = cms.string('hltHpsDoublePFTau35MediumDitauWPDeepTau')
                                )
-process.mutau = cms.EDAnalyzer('HLTTauPhase2Validator',
+process.hltIsoMu20eta2p1LooseDeepTauPFTauHPS27CrossL1 = cms.EDAnalyzer('HLTTauPhase2Validator',
                                channel = cms.string("mutau"),
                                        genParticles = cms.InputTag('prunedGenParticles'),
                                        triggerObjects = cms.InputTag('slimmedPatTrigger'),
@@ -47,7 +54,7 @@ process.mutau = cms.EDAnalyzer('HLTTauPhase2Validator',
                                        triggerfilter1 = cms.string('hltL3crIsoL1TkSingleMu22TrkIsoRegionalNewFiltered0p07EcalHcalHgcalTrk'),
                                        triggerfilter2 = cms.string('hltHpsPFTau27LooseTauWPDeepTau')
                                )
-process.eletau = cms.EDAnalyzer('HLTTauPhase2Validator',
+process.hltEle30WPTightL1SeededLooseDeepTauPFTauHPS30CrossL1 = cms.EDAnalyzer('HLTTauPhase2Validator',
                                 channel = cms.string("eletau"),
                                        genParticles = cms.InputTag('prunedGenParticles'),
                                        triggerObjects = cms.InputTag('slimmedPatTrigger'),
@@ -56,6 +63,6 @@ process.eletau = cms.EDAnalyzer('HLTTauPhase2Validator',
                                        triggerfilter2 = cms.string('hltHpsPFTau30LooseTauWPDeepTau')
                                 )
 
-process.TFileService = cms.Service("TFileService", fileName=cms.string('Test.root'))
+process.TFileService = cms.Service("TFileService", fileName=cms.string('TenTau15_1_0_pre1_PU_141X_mcRun4_realistic_v3_STD_Run4D110.root'))
 
 process.p = cms.Path(process.ditau + process.mutau + process.eletau)

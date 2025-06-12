@@ -268,7 +268,10 @@ void HLTTauPhase2Validator::analyze(const edm::Event& iEvent, const edm::EventSe
 	bool hasLeptonicDecay = true;
         break;}
     }
-    if(!hasLeptonicDecay){
+    if (tau->pt() < 30) continue;
+    if (std::fabs(tau->eta()) > 2.1) continue;
+    
+    if(!hasLeptonicDecay){  // Hadronic decay only
       GenTauPt = tau->pt();
       GenTauEta = tau->eta();
       GenTauPhi = tau->phi();
@@ -277,6 +280,8 @@ void HLTTauPhase2Validator::analyze(const edm::Event& iEvent, const edm::EventSe
   }
 
   for (auto &mu : muons){
+    if (mu->pt() < 21) continue;
+    if (std::fabs(mu->eta()) > 2.1) continue;
     for (auto &tau :taus){
       if(deltaR(mu->eta(),mu->phi(),tau->eta(),tau->phi()) < 0.4)
 	continue;
@@ -288,6 +293,8 @@ void HLTTauPhase2Validator::analyze(const edm::Event& iEvent, const edm::EventSe
   }
 
   for (auto &ele : electrons){
+    if (ele->pt() < 31) continue;
+    if (std::fabs(ele->eta()) > 2.1) continue;
     for (auto &tau :taus){
       if(deltaR(ele->eta(),ele->phi(),tau->eta(),tau->phi()) < 0.4)
 	continue;
