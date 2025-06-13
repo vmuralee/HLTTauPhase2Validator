@@ -29,20 +29,20 @@ def binomial_confidence(n_pass, n_total, conf_level=0.6827):
 # File paths — set these to your actual files
 file1_path = sys.argv[1]
 file2_path = sys.argv[2]
-file1_label = "15_1_0_pre2" 
-file2_label = "15_1_0_pre1"
+file1_label = "15_1_0_pre3" 
+file2_label = "15_1_0_pre2"
 
-channels = ["ditau", "mutau", "eletau"]
-output_base = "/eos/home-v/vmuralee/Phase2Validation/15_1_0_pre2/compare_plots/"
+channels = ["hltDoubleMediumChargedIsoPFTauHPS40","hltDoubleMediumDeepTauPFTauHPS35", "hltIsoMu20eta2p1LooseDeepTauPFTauHPS27CrossL1", "hltEle30WPTightL1SeededLooseDeepTauPFTauHPS30CrossL1"]
+output_base = "/eos/home-v/vmuralee/Phase2Validation/15_1_0_pre3/compare_plots/"
 os.makedirs(output_base, exist_ok=True)
 
 
 # Define histogram sets
 histogram_sets = [
-    ("hTrig1PassPt", "hTrig1TotalPt", {"ditau":"hltHpsPFTauTrack","mutau":"hltL3crIsoL1TkSingleMu22","eletau":"hltEle30WPTightGsfTrackIsoL1SeededFilter"}, "pt"),
-    ("hTrig2PassPt", "hTrig2TotalPt", {"ditau":"hltHpsDoublePFTau35MediumDitauWPDeepTau","mutau":"hltHpsPFTau27LooseTauWPDeepTau","eletau":"hltHpsPFTau30LooseTauWPDeepTau"}, "pt"),
-    ("hTrig1PassEta", "hTrig1TotalEta", {"ditau":"hltHpsPFTauTrack","mutau":"hltL3crIsoL1TkSingleMu22","eletau":"hltEle30WPTightGsfTrackIsoL1SeededFilter"}, "eta"),
-    ("hTrig2PassEta", "hTrig2TotalEta", {"ditau":"hltHpsDoublePFTau35MediumDitauWPDeepTau","mutau":"hltHpsPFTau27LooseTauWPDeepTau","eletau":"hltHpsPFTau30LooseTauWPDeepTau"}, "eta"),
+    ("hTrig1PassPt", "hTrig1TotalPt", {"hltDoubleMediumChargedIsoPFTauHPS40":"hltHpsPFTauTrack","hltDoubleMediumDeepTauPFTauHPS35":"hltHpsPFTauTrack","hltIsoMu20eta2p1LooseDeepTauPFTauHPS27CrossL1":"hltL3crIsoL1TkSingleMu22","hltEle30WPTightL1SeededLooseDeepTauPFTauHPS30CrossL1":"hltEle30WPTightGsfTrackIsoL1SeededFilter"}, "pt"),
+    ("hTrig2PassPt", "hTrig2TotalPt", {"hltDoubleMediumChargedIsoPFTauHPS40":"hltHpsDoublePFTau40TrackPt1MediumChargedIsolation","hltDoubleMediumDeepTauPFTauHPS35":"hltHpsDoublePFTau35MediumHltDoubleMediumDeepTauPFTauHPS35WPDeepTau","hltIsoMu20eta2p1LooseDeepTauPFTauHPS27CrossL1":"hltHpsPFTau27LooseTauWPDeepTau","hltEle30WPTightL1SeededLooseDeepTauPFTauHPS30CrossL1":"hltHpsPFTau30LooseTauWPDeepTau"}, "pt"),
+    ("hTrig1PassEta", "hTrig1TotalEta", {"hltDoubleMediumChargedIsoPFTauHPS40":"hltHpsPFTauTrack","hltDoubleMediumDeepTauPFTauHPS35":"hltHpsPFTauTrack","hltIsoMu20eta2p1LooseDeepTauPFTauHPS27CrossL1":"hltL3crIsoL1TkSingleMu22","hltEle30WPTightL1SeededLooseDeepTauPFTauHPS30CrossL1":"hltEle30WPTightGsfTrackIsoL1SeededFilter"}, "eta"),
+    ("hTrig2PassEta", "hTrig2TotalEta", {"hltDoubleMediumChargedIsoPFTauHPS40":"hltHpsDoublePFTau40TrackPt1MediumChargedIsolation","hltDoubleMediumDeepTauPFTauHPS35":"hltHpsDoublePFTau35MediumHltDoubleMediumDeepTauPFTauHPS35WPDeepTau","hltIsoMu20eta2p1LooseDeepTauPFTauHPS27CrossL1":"hltHpsPFTau27LooseTauWPDeepTau","hltEle30WPTightL1SeededLooseDeepTauPFTauHPS30CrossL1":"hltHpsPFTau30LooseTauWPDeepTau"}, "eta"),
 ]
 # Initialize HTML
 html_lines = [
@@ -90,29 +90,37 @@ for channel in channels:
         )
 
         
-        if(pass_name == "hTrig1PassPt" and channel=="ditau" and axis_type == "pt"):
+        if(pass_name == "hTrig1PassPt" and channel=="hltDoubleMediumChargedIsoPFTauHPS40" and axis_type == "pt"):
             axis_label = r"$p_T^\tau$ (GeV)"
-        elif(pass_name == "hTrig2PassPt" and channel=="ditau" and axis_type == "pt"):
+        elif(pass_name == "hTrig1PassPt" and channel=="hltDoubleMediumDeepTauPFTauHPS35" and axis_type == "pt"):
             axis_label = r"$p_T^\tau$ (GeV)"
-        elif(pass_name == "hTrig1PassEta" and channel=="ditau" and axis_type == "eta"):
+        elif(pass_name == "hTrig2PassPt" and channel=="hltDoubleMediumDeepTauPFTauHPS35" and axis_type == "pt"):
+            axis_label = r"$p_T^\tau$ (GeV)"
+        elif(pass_name == "hTrig2PassPt" and channel=="hltDoubleMediumChargedIsoPFTauHPS40" and axis_type == "pt"):
+            axis_label = r"$p_T^\tau$ (GeV)"
+        elif(pass_name == "hTrig1PassEta" and channel=="hltDoubleMediumDeepTauPFTauHPS35" and axis_type == "eta"):
             axis_label = r"$\eta^\tau$"
-        elif(pass_name == "hTrig2PassEta" and channel=="ditau" and axis_type == "eta"):
+        elif(pass_name == "hTrig2PassEta" and channel=="hltDoubleMediumDeepTauPFTauHPS35" and axis_type == "eta"):
             axis_label = r"$\eta^\tau$"
-        elif(pass_name == "hTrig1PassPt" and channel=="mutau" and axis_type == "pt"):
+        elif(pass_name == "hTrig1PassEta" and channel=="hltDoubleMediumChargedIsoPFTauHPS40" and axis_type == "eta"):
+            axis_label = r"$\eta^\tau$"
+        elif(pass_name == "hTrig2PassEta" and channel=="hltDoubleMediumChargedIsoPFTauHPS40" and axis_type == "eta"):
+            axis_label = r"$\eta^\tau$"
+        elif(pass_name == "hTrig1PassPt" and channel=="hltIsoMu20eta2p1LooseDeepTauPFTauHPS27CrossL1" and axis_type == "pt"):
             axis_label = r"$p_T^\mu$ (GeV)"
-        elif(pass_name == "hTrig2PassPt" and channel=="mutau" and axis_type == "pt"):
+        elif(pass_name == "hTrig2PassPt" and channel=="hltIsoMu20eta2p1LooseDeepTauPFTauHPS27CrossL1" and axis_type == "pt"):
             axis_label = r"$p_T^\tau$ (GeV)"
-        elif(pass_name == "hTrig1PassEta" and channel=="mutau" and axis_type == "eta"):
+        elif(pass_name == "hTrig1PassEta" and channel=="hltIsoMu20eta2p1LooseDeepTauPFTauHPS27CrossL1" and axis_type == "eta"):
             axis_label = r"$\eta^\mu$"
-        elif(pass_name == "hTrig2PassEta" and channel=="mutau" and axis_type == "eta"):
+        elif(pass_name == "hTrig2PassEta" and channel=="hltIsoMu20eta2p1LooseDeepTauPFTauHPS27CrossL1" and axis_type == "eta"):
             axis_label = r"$\eta^\tau$"
-        elif(pass_name == "hTrig1PassPt" and channel=="eletau" and axis_type == "pt"):
+        elif(pass_name == "hTrig1PassPt" and channel=="hltEle30WPTightL1SeededLooseDeepTauPFTauHPS30CrossL1" and axis_type == "pt"):
             axis_label = r"$p_T^e$ (GeV)"
-        elif(pass_name == "hTrig2PassPt" and channel=="eletau" and axis_type == "pt"):
+        elif(pass_name == "hTrig2PassPt" and channel=="hltEle30WPTightL1SeededLooseDeepTauPFTauHPS30CrossL1" and axis_type == "pt"):
             axis_label = r"$p_T^\tau$ (GeV)"
-        elif(pass_name == "hTrig1PassEta" and channel=="eletau" and axis_type == "eta"):
+        elif(pass_name == "hTrig1PassEta" and channel=="hltEle30WPTightL1SeededLooseDeepTauPFTauHPS30CrossL1" and axis_type == "eta"):
             axis_label = r"$\eta^e$"
-        elif(pass_name == "hTrig2PassEta" and channel=="eletau" and axis_type == "eta"):
+        elif(pass_name == "hTrig2PassEta" and channel=="hltEle30WPTightL1SeededLooseDeepTauPFTauHPS30CrossL1" and axis_type == "eta"):
             axis_label = r"$\eta^\tau$"
             
         plt.xlabel(axis_label)
